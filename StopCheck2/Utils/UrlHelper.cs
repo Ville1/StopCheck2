@@ -2,13 +2,11 @@
 {
     public class UrlHelper
     {
-        public static readonly string ERROR_PAGE = "~/Views/Error.aspx";
+        public static readonly string ERROR_PAGE = "/Error";
 
-        public static string ParseAjaxUrl()
+        public static string ParseAjaxUrl(Microsoft.AspNetCore.Http.HttpRequest request)
         {
-            return null;
-            //System.Net.WebRequest request
-            //return string.Format("{0}://{1}/{2}", request.Url.Scheme, request.Url.Authority, "Ajax/StopDepartures.asmx/GetDepartures");
+            return string.Format("{0}://{1}/{2}", request.Scheme, request.Host, "Ajax/StopDepartures?handler=Departures");
         }
     }
 }

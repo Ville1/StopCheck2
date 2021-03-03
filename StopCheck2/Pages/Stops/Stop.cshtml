@@ -1,5 +1,83 @@
 ﻿@page
-@model StopCheck2.Pages.Misc.TodoModel
+@model StopCheck2.Pages.Stops.StopModel
+@using StopCheck2.Utils;
+
+@Html.AntiForgeryToken()
 @{
     ViewData["Title"] = "Stop";
+
+    Data.Stop stop = null;
+    if (Request.Query.ContainsKey("id")) {
+        stop = ApiHelper.Api.GetStop(Request.Query["id"]);
+    }
+    if (stop == null) {
+        Response.Redirect(UrlHelper.ERROR_PAGE);
+    } else {
+        <h1>@stop.Name</h1>
+        <div class="row">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4">
+                <table class="table">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">
+                                Headsign
+                            </th>
+                            <th scope="col">
+                                Arrives
+                            </th>
+                            <th scope="col">
+                                Departs
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <span id="refresh-button" class="btn btn-primary">Refresh</span>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var refresh = function () {
+                    $.ajax({
+                        url: '@UrlHelper.ParseAjaxUrl(Request)',
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('@Constants.ANTIFORGERY_TOKEN_NAME', $('input:hidden[name="__RequestVerificationToken"]').val());
+                        },
+                        data: JSON.stringify({
+                            id: '@stop.Id'
+                        }),
+                        contentType: 'application/json',
+                        type: 'post',
+                        dataType: 'json',
+                        success: function (data) {
+                            var tableBody = $('#table-body');
+                            $('.departure-row').remove();
+                            data.departures.forEach(function (item, index) {
+                                tableBody.append(
+                                    '<tr class="departure-row">' +
+                                        '<td>' +
+                                            item.headsign +
+                                        '</td>' +
+                                        '<td>' +
+                                            item.arrival.realtime +
+                                        '</td>' +
+                                        '<td>' +
+                                            item.departure.realtime +
+                                        '</td>' +
+                                    '</tr>'
+                                );
+                            });
+                        },
+                        error: function (error) {
+                            console.log(error.responseText);
+                        }
+                    });
+                }
+                refresh();
+                $('#refresh-button').on('click', refresh);
+            });
+        </script>
+    }
 }

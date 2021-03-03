@@ -1,10 +1,9 @@
 ﻿@page
-@model StopCheck2.Pages.Misc.TodoModel
+@model StopCheck2.Pages.Stops.StopSearchModel
+@using StopCheck2.Utils;
 @{
     ViewData["Title"] = "Search";
 }
-
-@using StopCheck2.Utils;
 
 <br />
 
@@ -33,11 +32,7 @@
                         if (!string.IsNullOrEmpty(search)) {
                             List<Data.Stop> results = ApiHelper.Api.Search(search);
                             if (results == null) {
-                                <tr>
-                                    <td>
-                                        ERROR
-                                    </td>
-                                </tr>
+                                Response.Redirect(UrlHelper.ERROR_PAGE);
                             } else {
                                 foreach (Data.Stop result in ApiHelper.Api.Search(search)) {
                                     <tr>
@@ -48,11 +43,11 @@
                                             <p>TODO: Add map here</p>
                                         </td>
                                     </tr>
-                                    }
                                 }
                             }
                         }
                     }
+                }
             </tbody>
         </table>
     </div>

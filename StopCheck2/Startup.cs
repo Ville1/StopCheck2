@@ -21,6 +21,7 @@ namespace StopCheck2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            services.AddAntiforgery(x => x.HeaderName = Constants.ANTIFORGERY_TOKEN_NAME);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
