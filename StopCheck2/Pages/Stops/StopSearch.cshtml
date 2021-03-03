@@ -1,0 +1,59 @@
+﻿@page
+@model StopCheck2.Pages.Misc.TodoModel
+@{
+    ViewData["Title"] = "Search";
+}
+
+@using StopCheck2.Utils;
+
+<br />
+
+<form method="POST" action="">
+    <input id="SearchTextBox" name="search" class="form-control" type="text" />
+    <input id="SearchButton" class="btn btn-primary" type="submit" value="Search" />
+</form>
+
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col" style="width: 20%;">
+                        Stop
+                    </th>
+                    <th scope="col">
+                        Map
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Request.Method == "POST") {
+                        string search = Request.Form["search"];
+                        if (!string.IsNullOrEmpty(search)) {
+                            List<Data.Stop> results = ApiHelper.Api.Search(search);
+                            if (results == null) {
+                                <tr>
+                                    <td>
+                                        ERROR
+                                    </td>
+                                </tr>
+                            } else {
+                                foreach (Data.Stop result in ApiHelper.Api.Search(search)) {
+                                    <tr>
+                                        <td>
+                                            <a href="Stop?id=@result.Id">@result.Name</a>
+                                        </td>
+                                        <td>
+                                            <p>TODO: Add map here</p>
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                            }
+                        }
+                    }
+            </tbody>
+        </table>
+    </div>
+</div>
