@@ -1,6 +1,7 @@
 ﻿@page
 @model StopCheck2.Pages.Stops.StopSearchModel
 @using StopCheck2.Utils;
+@using StopCheck2.Components;
 @{
     ViewData["Title"] = "Search";
 }
@@ -40,7 +41,7 @@
                                             <a href="Stop?id=@result.Id">@result.Name</a>
                                         </td>
                                         <td>
-                                            <p>TODO: Add map here</p>
+                                            @await Component.InvokeAsync("Map", new { id = result.Id, longitude = result.Longitude, latitude = result.Latitude, zoom = 18.0f, size = 200.0f })
                                         </td>
                                     </tr>
                                 }

@@ -1,0 +1,30 @@
+﻿@model StopCheck2.Pages.Shared.Components.Map.DefaultModel
+
+<!-- TODO: Duplicated css -->
+<style>
+    .map {
+        height: @Model.SizeCss;
+        width: @Model.SizeCss;
+    }
+</style>
+
+<div id="@Model.MapElementId" class="map"></div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var map = new ol.Map({
+            target: '@Model.MapElementId',
+            layers: [
+              new ol.layer.Tile({
+                  source: new ol.source.OSM()
+              })
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([
+                    @Model.Longitude,
+                    @Model.Latitude
+                ]),
+                zoom: @Model.Zoom
+            })
+        });
+    });
+</script>
