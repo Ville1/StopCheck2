@@ -33,6 +33,7 @@ namespace StopCheck2
                 app.UseExceptionHandler("/Error");
             }
 
+            app.UseDefaultFiles();
             app.UseStaticFiles();
 
             app.UseRouting();
