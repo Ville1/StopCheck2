@@ -8,9 +8,11 @@ namespace StopCheck2.Utils
         {
             TimeFormat = configuration.GetValue<string>("TimeFormat");
             HSLRestUrlStop = configuration.GetValue<string>("HSLRestUrlStop");
+            UsesHttps = configuration.GetValue<bool>("UsesHttps");
         }
 
         public static string TimeFormat { get; private set; }
         public static string HSLRestUrlStop { get; private set; }
+        public static bool UsesHttps { get; private set; }
     }
 }

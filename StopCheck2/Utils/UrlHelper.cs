@@ -6,7 +6,9 @@
 
         public static string ParseAjaxUrl(Microsoft.AspNetCore.Http.HttpRequest request)
         {
-            return string.Format("{0}://{1}/{2}", request.Scheme, request.Host, "Ajax/StopDepartures?handler=Departures");
+            //request.Scheme doesn't work because Google Cloud load balancing?
+            //return string.Format("{0}://{1}/{2}", request.Scheme, request.Host, "Ajax/StopDepartures?handler=Departures");
+            return string.Format("{0}://{1}/{2}", Config.UsesHttps ? "https" : "http", request.Host, "Ajax/StopDepartures?handler=Departures");
         }
     }
 }
