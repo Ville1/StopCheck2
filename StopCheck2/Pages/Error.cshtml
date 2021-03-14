@@ -1,6 +1,8 @@
 ﻿@page
 @model ErrorModel
+@using StopCheck2.Utils;
 @{
-    ViewData["Title"] = "Error";
+    ViewData[Constants.TITLE_KEY] = "Error";
+    ViewData[Constants.USER_KEY] = SessionHelper.GetCurrentUser(HttpContext);
 }
 <h1>ERROR!</h1>

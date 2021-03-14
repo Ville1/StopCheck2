@@ -1,7 +1,9 @@
 ﻿@page
 @model IndexModel
+@using StopCheck2.Utils;
 @{
-    ViewData["Title"] = "Home page";
+    ViewData[Constants.TITLE_KEY] = "Home page";
+    ViewData[Constants.USER_KEY] = SessionHelper.GetCurrentUser(HttpContext);
 }
 
 <div class="text-center">

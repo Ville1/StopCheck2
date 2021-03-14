@@ -1,9 +1,9 @@
 ﻿@page
 @model StopCheck2.Pages.Stops.StopSearchModel
 @using StopCheck2.Utils;
-@using StopCheck2.Components;
 @{
-    ViewData["Title"] = "Search";
+    ViewData[Constants.TITLE_KEY] = "Search";
+    ViewData[Constants.USER_KEY] = SessionHelper.GetCurrentUser(HttpContext);
 }
 
 <br />

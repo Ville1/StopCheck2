@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using StopCheck2.Utils;
+using System;
 
 namespace StopCheck2
 {
@@ -22,6 +23,12 @@ namespace StopCheck2
         {
             services.AddRazorPages();
             services.AddAntiforgery(x => x.HeaderName = Constants.ANTIFORGERY_TOKEN_NAME);
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromSeconds(Config.SessionTimeOut);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -34,10 +41,9 @@ namespace StopCheck2
             }
 
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
+            app.UseSession();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapRazorPages();

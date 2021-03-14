@@ -4,7 +4,8 @@
 
 @Html.AntiForgeryToken()
 @{
-    ViewData["Title"] = "Stop";
+    ViewData[Constants.TITLE_KEY] = "Stop";
+    ViewData[Constants.USER_KEY] = SessionHelper.GetCurrentUser(HttpContext);
 
     Data.Stop stop = null;
     if (Request.Query.ContainsKey("id")) {

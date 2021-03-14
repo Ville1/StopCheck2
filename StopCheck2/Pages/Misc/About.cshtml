@@ -1,7 +1,9 @@
 ﻿@page
 @model StopCheck2.Pages.Misc.AboutModel
+@using StopCheck2.Utils;
 @{
-    ViewData["Title"] = "About";
+    ViewData[Constants.TITLE_KEY] = "About";
+    ViewData[Constants.USER_KEY] = SessionHelper.GetCurrentUser(HttpContext);
 }
 
 <div class="row" style="margin-top: 10px;">

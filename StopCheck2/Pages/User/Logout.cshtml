@@ -1,0 +1,10 @@
+﻿@page
+@model StopCheck2.Pages.User.LogoutModel
+@using StopCheck2.Utils;
+@{
+    ViewData[Constants.TITLE_KEY] = "Logout";
+    ViewData[Constants.USER_KEY] = null;
+    SessionHelper.SetCurrentUser(HttpContext, null);
+}
+
+<h2>You have logged out!</h2>

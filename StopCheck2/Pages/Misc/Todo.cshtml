@@ -1,7 +1,9 @@
 ﻿@page
 @model StopCheck2.Pages.Misc.TodoModel
+@using StopCheck2.Utils;
 @{
-    ViewData["Title"] = "Todo";
+    ViewData[Constants.TITLE_KEY] = "Todo";
+    ViewData[Constants.USER_KEY] = SessionHelper.GetCurrentUser(HttpContext);
 }
 
 <div class="row" style="margin-top: 10px;">

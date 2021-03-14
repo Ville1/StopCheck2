@@ -2,6 +2,7 @@
 {
     public class UrlHelper
     {
+        public static readonly string INDEX_PAGE = "/Index";
         public static readonly string ERROR_PAGE = "/Error";
 
         public static string ParseAjaxUrl(Microsoft.AspNetCore.Http.HttpRequest request)

@@ -1,0 +1,48 @@
+﻿@page
+@model StopCheck2.Pages.User.LoginModel
+@using StopCheck2.Data.DB;
+@using StopCheck2.Data.DB.Model;
+@using StopCheck2.Utils;
+@{
+    ViewData[Constants.TITLE_KEY] = "Login";
+    ViewData[Constants.USER_KEY] = null;
+}
+
+<form method="POST" action="">
+    <table>
+        <tr>
+            <td>
+                Username
+            </td>
+            <td>
+                <input id="UsernameTextBox" name="username" class="form-control" type="text" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Password
+            </td>
+            <td>
+                <input id="PasswordTextBox" name="password" class="form-control" type="password" />
+            </td>
+        </tr>
+    </table>
+    <input id="LoginButton" class="btn btn-primary" type="submit" value="Login" />
+</form>
+
+@{
+    if(SessionHelper.GetCurrentUser(HttpContext) != null) {
+        Response.Redirect(UrlHelper.INDEX_PAGE);
+    } else if (Request.Method == "POST") {
+        string username = Request.Form["username"];
+        string password = Request.Form["password"];
+
+        User user = Database.Users.GetAll().Result.FirstOrDefault(x => x.Username == username && x.Password == password);
+        if (user != null) {
+            SessionHelper.SetCurrentUser(HttpContext, user);
+            Response.Redirect("/Index");
+        } else {
+            <p>Invalid credentials</p>
+        }
+    }
+}
