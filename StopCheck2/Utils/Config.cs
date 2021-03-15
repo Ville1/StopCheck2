@@ -7,6 +7,7 @@ namespace StopCheck2.Utils
         public static void Initialize(IConfiguration configuration)
         {
             TimeFormat = configuration.GetValue<string>("TimeFormat");
+            DateFormat = configuration.GetValue<string>("DateFormat");
             HSLRestUrlStop = configuration.GetValue<string>("HSLRestUrlStop");
             UsesHttps = configuration.GetValue<bool>("UsesHttps");
             GoogleCloudProjectId = configuration.GetValue<string>("GoogleCloudProjectId");
@@ -14,6 +15,7 @@ namespace StopCheck2.Utils
         }
 
         public static string TimeFormat { get; private set; }
+        public static string DateFormat { get; private set; }
         public static string HSLRestUrlStop { get; private set; }
         public static bool UsesHttps { get; private set; }
         public static string GoogleCloudProjectId { get; private set; }

@@ -52,7 +52,10 @@
             if(Database.Users.GetAll().Result.FirstOrDefault(x => x.Username == username) == null) {
                 User user = Database.Users.Save(new User() {
                     Username = username,
-                    Password = password
+                    Password = password,
+                    Created = DateTime.Now.ToUniversalTime(),
+                    Updated = DateTime.Now.ToUniversalTime(),
+                    RolesReference = new List<Google.Cloud.Firestore.DocumentReference>()
                 }).Result;
                 SessionHelper.SetCurrentUser(HttpContext, user);
                 Response.Redirect("/Index");

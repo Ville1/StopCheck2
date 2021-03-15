@@ -4,7 +4,7 @@
 @{
     ViewData[Constants.TITLE_KEY] = "Logout";
     ViewData[Constants.USER_KEY] = null;
-    SessionHelper.SetCurrentUser(HttpContext, null);
+    SessionHelper.ClearCurrentUser(HttpContext);
 }
 
 <h2>You have logged out!</h2>

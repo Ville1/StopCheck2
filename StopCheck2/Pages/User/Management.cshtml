@@ -1,0 +1,111 @@
+﻿@page
+@model StopCheck2.Pages.User.ManagementModel
+@using StopCheck2.Utils;
+@using StopCheck2.Data.DB;
+@using StopCheck2.Data.DB.Model;
+@{
+    ViewData[Constants.TITLE_KEY] = "User management";
+    User currentUser = SessionHelper.GetCurrentUser(HttpContext);
+    ViewData[Constants.USER_KEY] = currentUser;
+    if (currentUser == null || !currentUser.HasRight(Constants.Rights.ViewUsers)) {
+        Response.Redirect(UrlHelper.ERROR_PAGE);//Unauthorized
+    } else if(Request.Method == "POST") {
+        string id = Request.Form["id"];
+        if(id == currentUser.Id) {
+            <p>You can't delete your own account!</p>
+        } else if(!currentUser.HasRight(Constants.Rights.ModifyUsers)) {
+            <p>Unauthorized operation</p>
+        } else {
+            bool success = Database.Users.Delete(id).Result;
+            if (!success) {
+                Response.Redirect(UrlHelper.ERROR_PAGE);
+            }
+        }
+    }
+}
+
+<div class="row">
+    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col" style="width: 20%;">
+                        Username
+                    </th>
+                    <th scope="col">
+                        Created
+                    </th>
+                    <th scope="col">
+                        Updated
+                    </th>
+                    <th scope="col">
+                        Roles
+                    </th>
+                    <th>
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    foreach (User user in Database.Users.GetAll().Result) {
+                        <tr>
+                            <td>
+                                @user.Username
+                            </td>
+                            <td>
+                                @user.Created.ToString(Config.DateFormat)
+                            </td>
+                            <td>
+                                @user.Updated.ToString(Config.DateFormat)
+                            </td>
+                            <td>
+                                @string.Join(", ", user.Roles.Select(x => x.Name).ToArray())
+                            </td>
+                            <td>
+                                @if (user.Username != currentUser.Username && currentUser.HasRight(Constants.Rights.ModifyUsers)) {
+                                    <button type="button" class="btn btn-danger delete-button" data-toggle="modal" data-target="#deleteModal" data-id="@user.Id"
+                                            data-username="@user.Username">
+                                        Delete
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete user <span id="usernameSpan">[USERNAME]</span>?</p>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" action="">
+                    <input id="IdHidden" name="id" class="form-control" type="hidden" />
+                    <button type="submit" class="btn btn-primary">Delete</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.delete-button').on('click', function () {
+            $('#IdHidden').val(this.attributes['data-id'].value);
+            $('#usernameSpan').html(this.attributes['data-username'].value);
+        });
+    });
+</script>

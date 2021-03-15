@@ -29,6 +29,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Misc/About">About</a>
                         </li>
+                        @{
+                            if (ViewData[Constants.USER_KEY] != null && (ViewData[Constants.USER_KEY] as User).HasRight(Constants.Rights.ViewUsers)) {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-page="/User/Management">User management</a>
+                                </li>
+                            }
+                        }
                     </ul>
                     <ul class="navbar-nav ml-auto">
                         @{

@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Linq;
+using StopCheck2.Data.DB;
 using StopCheck2.Data.DB.Model;
 
 namespace StopCheck2.Utils
@@ -19,15 +21,18 @@ namespace StopCheck2.Utils
             }
         }
 
+        public static void ClearCurrentUser(HttpContext context)
+        {
+            context.Session.Remove(USERNAME_KEY);
+            context.Session.Remove(PASSWORD_KEY);
+        }
+
         public static User GetCurrentUser(HttpContext context)
         {
             if (string.IsNullOrEmpty(context.Session.GetString(USERNAME_KEY))) {
                 return null;
             }
-            return new User() {
-                Username = context.Session.GetString(USERNAME_KEY),
-                Password = context.Session.GetString(PASSWORD_KEY)
-            };
+            return Database.Users.GetAll().Result.FirstOrDefault(x => x.Username == context.Session.GetString(USERNAME_KEY) && x.Password == context.Session.GetString(PASSWORD_KEY));
         }
     }
 }
