@@ -16,5 +16,10 @@ namespace StopCheck2.Data.DB.Model
         public List<int> RightsInt { get; set; }
 
         public List<Constants.Rights> Rights { get { return RightsInt.Select(x => (Constants.Rights)x).ToList(); } }
+
+        public override string ToString()
+        {
+            return string.Format("{0} Id: {1}", Name, Id);
+        }
     }
 }

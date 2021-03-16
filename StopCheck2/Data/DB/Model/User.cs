@@ -28,5 +28,10 @@ namespace StopCheck2.Data.DB.Model
         {
             return Roles.Exists(x => x.Rights.Exists(y => y == right));
         }
+
+        public override string ToString()
+        {
+            return string.Format("{0} Id: {1}", Username, Id);
+        }
     }
 }

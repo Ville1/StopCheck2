@@ -1,4 +1,5 @@
 ﻿@using StopCheck2.Utils;
+@using StopCheck2.Data.DB;
 @using StopCheck2.Data.DB.Model;
 <!DOCTYPE html>
 <html lang="en">
@@ -62,11 +63,35 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
+
+    @{
+        if (ViewData[Constants.USER_KEY] != null) {
+            List<Bookmark> bookmarks = Database.Bookmarks.GetAll().Result.Where(x => x.Owner.Id == ((User)ViewData[Constants.USER_KEY]).Id).ToList();
+            if (bookmarks.Count != 0) {
+                <div class="bookmark-menu">
+                    <h6 class="bookmark-header">Bookmarks</h6>
+                    <table style="width: 100%; margin-bottom: 10px;">
+                        @foreach (Bookmark bookmark in bookmarks) {
+                            <tr>
+                                <td>
+                                    <a class="bookmark-item" href="/Stops/Stop?id=@bookmark.StopId">@bookmark.Name</a>
+                                </td>
+                                <td>
+                                    <!-- TODO: Add action buttons? Remove edit and such -->
+                                </td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            }
+        }
+    }
 
     <footer class="border-top footer text-muted">
         <div class="container">

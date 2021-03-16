@@ -37,20 +37,36 @@ namespace StopCheck2.Data.DB
                             }
                             if (propertyInfo.PropertyType.GetInterfaces().Contains(typeof(IList))) {
                                 if (documentReferencePropertyInfo.PropertyType.GenericTypeArguments.Length != 1 || documentReferencePropertyInfo.PropertyType.GenericTypeArguments[0] != typeof(DocumentReference)) {
-                                    throw new Exception(string.Format("Property name {0} is not List<DocumentReference>", attribute.PropertyName));
+                                    throw new Exception(string.Format("Property {0} is not List<DocumentReference>", attribute.PropertyName));
                                 }
                                 List<DocumentReference> referenceList = documentReferencePropertyInfo.GetValue(item) as List<DocumentReference>;
                                 Type type = propertyInfo.PropertyType.GenericTypeArguments[0];
+                                if (!type.GetInterfaces().Contains(typeof(IDBModel))) {
+                                    throw new Exception(string.Format("Type {0} does not implement IDBModel", attribute.PropertyName));
+                                }
                                 IList list2 = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(type));
                                 foreach (DocumentReference reference in referenceList) {
                                     DocumentSnapshot snapshot2 = await reference.GetSnapshotAsync();
                                     MethodInfo convertMethod = snapshot2.GetType().GetMethod("ConvertTo").MakeGenericMethod(new Type[] { type });
-                                    list2.Add(convertMethod.Invoke(snapshot2, new object[] { }));
+                                    object obj = convertMethod.Invoke(snapshot2, new object[] { });
+                                    ((IDBModel)obj).Id = reference.Id;
+                                    list2.Add(obj);
                                 }
                                 propertyInfo.SetValue(item, list2);
                             } else {
-                                //TODO: this
-                                throw new NotImplementedException();
+                                Type type = propertyInfo.PropertyType;
+                                if(documentReferencePropertyInfo.PropertyType != typeof(DocumentReference)) {
+                                    throw new Exception(string.Format("Property {0} is not DocumentReference", attribute.PropertyName));
+                                }
+                                if (!type.GetInterfaces().Contains(typeof(IDBModel))) {
+                                    throw new Exception(string.Format("Type {0} does not implement IDBModel", attribute.PropertyName));
+                                }
+                                DocumentReference reference = documentReferencePropertyInfo.GetValue(item) as DocumentReference;
+                                DocumentSnapshot snapshot2 = await reference.GetSnapshotAsync();
+                                MethodInfo convertMethod = snapshot2.GetType().GetMethod("ConvertTo").MakeGenericMethod(new Type[] { type });
+                                object obj = convertMethod.Invoke(snapshot2, new object[] { });
+                                ((IDBModel)obj).Id = reference.Id;
+                                propertyInfo.SetValue(item, obj);
                             }
                         }
                     }
@@ -98,6 +114,21 @@ namespace StopCheck2.Data.DB
             } catch (Exception exception) {
                 Logger.LogException(exception);
                 return false;
+            }
+        }
+
+        public async Task<DocumentReference> GetReference(T obj)
+        {
+            try {
+                QuerySnapshot snapshot = await Collection.GetSnapshotAsync();
+                DocumentSnapshot documentSnapshot = snapshot.Documents.Select(x => x).ToList().FirstOrDefault(x => x.Id == obj.Id);
+                if (documentSnapshot == null) {
+                    return null;
+                }
+                return documentSnapshot.Reference;
+            } catch (Exception exception) {
+                Logger.LogException(exception);
+                return null;
             }
         }
 

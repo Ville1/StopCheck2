@@ -1,11 +1,14 @@
 ﻿@page
 @model StopCheck2.Pages.Stops.StopModel
 @using StopCheck2.Utils;
+@using StopCheck2.Data.DB;
+@using StopCheck2.Data.DB.Model;
 
 @Html.AntiForgeryToken()
 @{
     ViewData[Constants.TITLE_KEY] = "Stop";
-    ViewData[Constants.USER_KEY] = SessionHelper.GetCurrentUser(HttpContext);
+    User user = SessionHelper.GetCurrentUser(HttpContext);
+    ViewData[Constants.USER_KEY] = user;
 
     Data.Stop stop = null;
     if (Request.Query.ContainsKey("id")) {
@@ -14,6 +17,25 @@
     if (stop == null) {
         Response.Redirect(UrlHelper.ERROR_PAGE);
     } else {
+        if (Request.Method == "POST" && user != null) {
+            string bookmarkName = Request.Form["bookmarkName"];
+            Bookmark bookmark = Database.Bookmarks.GetAll().Result.Where(x => x.Owner.Id == user.Id).FirstOrDefault(x => x.StopId == stop.Id);
+            if(bookmark != null) {
+                //Delete bookmark
+                bool success = Database.Bookmarks.Delete(bookmark.Id).Result;
+            } else {
+                //Create bookmark
+                bookmarkName = string.IsNullOrEmpty(bookmarkName) ? stop.Name : bookmarkName;
+                bookmark = Database.Bookmarks.Save(new Bookmark() {
+                    Name = bookmarkName,
+                    StopId = stop.Id,
+                    OwnerReference = Database.Users.GetReference(user).Result,
+                    Created = DateTime.Now.ToUniversalTime(),
+                    Updated = DateTime.Now.ToUniversalTime()
+                }).Result;
+            }
+        }
+
         <h1>@stop.Name</h1>
         <div class="row">
             <div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4">
@@ -36,7 +58,26 @@
                 </table>
             </div>
         </div>
-        <span id="refresh-button" class="btn btn-primary">Refresh</span>
+        <button id="refresh-button" class="btn btn-primary" type="button">Refresh</button>
+
+        @if (user != null) {
+            List<Bookmark> bookmarks = Database.Bookmarks.GetAll().Result.Where(x => x.Owner.Id == user.Id).ToList();
+            bool bookmarksExists = bookmarks.Exists(x => x.StopId == stop.Id);
+            <form method="POST" action="">
+                <table>
+                    <tr>
+                        <td>
+                            <input id="BookmarkButton" class="btn @(bookmarksExists ? "btn-warning" : "btn-primary")" type="submit" value="@(bookmarksExists ? "Delete bookmark" : "Add bookmark")" />
+                        </td>
+                        <td>
+                            @if (!bookmarksExists) {
+                                <input id="BookmarkNameTextBox" name="bookmarkName" class="form-control" type="text" value="@stop.Name" />
+                            }
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        }
 
         <script type="text/javascript">
             $(document).ready(function () {
