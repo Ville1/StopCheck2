@@ -16,9 +16,20 @@
         } else if(!currentUser.HasRight(Constants.Rights.ModifyUsers)) {
             <p>Unauthorized operation</p>
         } else {
-            bool success = Database.Users.Delete(id).Result;
-            if (!success) {
-                Response.Redirect(UrlHelper.ERROR_PAGE);
+            bool success = true;
+            List<Bookmark> bookmarks = Database.Bookmarks.GetAll().Result.Where(x => x.Owner.Id == id).ToList();
+            foreach(Bookmark bookmark in bookmarks) {
+                success = Database.Bookmarks.Delete(bookmark.Id).Result;
+                if (!success) {
+                    Response.Redirect(UrlHelper.ERROR_PAGE);
+                    break;
+                }
+            }
+            if (success) {
+                success = Database.Users.Delete(id).Result;
+                if (!success) {
+                    Response.Redirect(UrlHelper.ERROR_PAGE);
+                }
             }
         }
     }
